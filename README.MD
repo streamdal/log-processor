@@ -19,7 +19,7 @@ Leverage the power of Streamdal to supercharger your existing logging solution.
 
 **PII Redaction:** Automated redaction of sensitive information from logs.
 
-**Centralized Rule Management:** Streamdal provides a UI for central rule management. These rules are then pulled in from the log-processing agents across your orginization.
+**Centralized Rule Management:** Streamdal provides a UI for central rule management. These rules are then pulled in from the log-processing agents across your organization.
 
 **Scalable Architecture:** Designed to handle high volumes of log data efficiently.Blazing fast pipelines, all function built using WASM, and pushed down to local log-processors to distribute load to the edge and allow for realtime processing.  
 
@@ -72,7 +72,7 @@ output {
   }
 }
 ```
-4. Add a section to recieve the processed data from the Streamdal log-processor and output to final desitination
+4. Add a section to recieve the processed data from the Streamdal log-processor and output to final destination
 
 ```
 input {

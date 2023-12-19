@@ -17,10 +17,10 @@ services:
     volumes:
       - .:/app
     environment:
-     - SERVER=streamdal-server:8082
-     - LISTEN_PORT=6000
-     - LOGSTASH_OUTPUT_PORT=logstash-server:7002
-     - STREAMDAL_TOKEN=1234
+     - STREAMDAL_LOG_PROCESSOR_STREAMDAL_SERVER=streamdal-server:8082
+     - STREAMDAL_LOG_PROCESSOR_LISTEN_ADDR=6000
+     - STREAMDAL_LOG_PROCESSOR_LOGSTASH_ADDR=logstash-server:7002
+     - STREAMDAL_LOG_PROCESSOR_STREAMDAL_TOKEN=1234
     ports:
       - "6000:6000"
       - "7002:7002"
