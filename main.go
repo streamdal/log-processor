@@ -12,18 +12,16 @@ import (
 	streamdal "github.com/streamdal/go-sdk" // Import Streamdal SDK
 )
 
-const (
-	listenPort         = ":6000"
-	logstashOutputPort = "logstash-server:7002"
-	streamdalToken     = "1234"
-)
-
 type LogEntry struct {
 	Message string `json:"message"`
 }
 
 func main() {
+	listenPort := getEnv("LISTEN_PORT", ":6000")
+	logstashOutputPort := getEnv("LOGSTASH_OUTPUT_PORT", "logstash-server:7002")
+	streamdalToken := getEnv("STREAMDAL_TOKEN", "1234")
 	streamdalServer := os.Getenv("SERVER")
+
 	streamdalClient, err := streamdal.New(&streamdal.Config{
 		ServerURL:   streamdalServer,
 		ServerToken: streamdalToken,
@@ -48,7 +46,6 @@ func main() {
 			continue
 		}
 
-		// Directly handling the connection logic in main
 		scanner := bufio.NewScanner(conn)
 		for scanner.Scan() {
 			logLine := scanner.Text()
@@ -57,12 +54,19 @@ func main() {
 				log.Printf("Error processing log: %v", err)
 				continue
 			}
-			if err := sendToLogstash(processedLog); err != nil {
+			if err := sendToLogstash(processedLog, logstashOutputPort); err != nil {
 				log.Printf("Error sending to Logstash: %v", err)
 			}
 		}
-		conn.Close() // Close the connection here
+		conn.Close()
 	}
+}
+
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
 }
 
 func processLog(logLine string, streamdalClient *streamdal.Streamdal) (string, error) {
@@ -71,14 +75,12 @@ func processLog(logLine string, streamdalClient *streamdal.Streamdal) (string, e
 
 	var data []byte
 	if err != nil {
-		// Log line is not JSON, marshal it as a simple JSON object
 		logEntry := LogEntry{Message: logLine}
 		data, err = json.Marshal(logEntry)
 		if err != nil {
 			return "", err
 		}
 	} else {
-		// Log line is already JSON, use it as is
 		data = []byte(logLine)
 	}
 
@@ -99,7 +101,7 @@ func processLog(logLine string, streamdalClient *streamdal.Streamdal) (string, e
 	return string(resp.Data), nil
 }
 
-func sendToLogstash(logLine string) error {
+func sendToLogstash(logLine string, logstashOutputPort string) error {
 	conn, err := net.Dial("tcp", logstashOutputPort)
 	if err != nil {
 		return err
