@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  logstash-agent:
+    container_name: logstash-agent
+    image: logstash:7.17.5
+    volumes:
+      - ./logstash-agent.conf:/usr/share/logstash/pipeline/logstash.conf
+    ports:
+      - "5044:5044"
+    networks:
+      - streamdal-network
+
+  go-app:
+    build: .
+    container_name: go-app
+    volumes:
+      - .:/app
+    environment:
+     - SERVER=streamdal-server:8082
+    ports:
+      - "6000:6000"
+      - "7002:7002"
+    networks:
+      - streamdal-network
+    depends_on:
+      - logstash-agent
+
+  logstash-server:
+    container_name: logstash-server
+    image: logstash:7.17.15
+    volumes:
+      - ./logstash-server.conf:/usr/share/logstash/pipeline/logstash.conf
+    ports:
+      - "9600:9600"
+    networks:
+      - streamdal-network
+    depends_on:
+      - go-app
+
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:7.17.15
+    platform: "linux/amd64"
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    networks:
+      - streamdal-network
+    
+  kibana:
+    container_name: kibana
+    image: kibana:7.17.15
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    networks:
+      - streamdal-network
+    depends_on:
+      - elasticsearch
+
+networks:
+  streamdal-network:
+    external: true
