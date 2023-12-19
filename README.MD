@@ -16,9 +16,13 @@ Leverage the power of Streamdal to supercharger your existing logging solution.
 ### Features
 
 **Real-Time Log Processing:** Fast processing of incoming logs with minimal latency.
+
 **PII Redaction:** Automated redaction of sensitive information from logs.
+
 **Centralized Rule Management:** Streamdal provides a UI for central rule management. These rules are then pulled in from the log-processing agents across your orginization.
+
 **Scalable Architecture:** Designed to handle high volumes of log data efficiently.Blazing fast pipelines, all function built using WASM, and pushed down to local log-processors to distribute load to the edge and allow for realtime processing.  
+
 **Go Processing Agent:** Custom-built agent for processing logs.
 
 ### Getting Started
