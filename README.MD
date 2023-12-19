@@ -38,7 +38,7 @@ The steps below will deploy the Streamdal stack along with a logstash environmen
 ![Create Pipeline](assets/create-pipeline.png)
 1. Attach Pipeline to the Data Stream
 ![Attach Pipeline](assets/attach-pipeline.png)
-1. Use Streamdal's tail to confirm IP's are masked
+1. Use Streamdal's tail to confirm IPs are masked
 ![Tail](assets/tail.png)
 1. You should see the masked IP
 ![Live Tail](assets/live-tail.png)
