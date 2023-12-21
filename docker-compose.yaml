@@ -11,16 +11,16 @@ services:
     networks:
       - streamdal-network
 
-  go-app:
+  log-processor:
     build: .
-    container_name: go-app
+    container_name: log-processor
     volumes:
       - .:/app
     environment:
-     - SERVER=streamdal-server:8082
-     - LISTEN_PORT=6000
-     - LOGSTASH_OUTPUT_PORT=logstash-server:7002
-     - STREAMDAL_TOKEN=1234
+     - STREAMDAL_LOG_PROCESSOR_STREAMDAL_SERVER=streamdal-server:8082
+     - STREAMDAL_LOG_PROCESSOR_LISTEN_ADDR=0.0.0.0:6000
+     - STREAMDAL_LOG_PROCESSOR_LOGSTASH_ADDR=logstash-server:7002
+     - STREAMDAL_LOG_PROCESSOR_STREAMDAL_TOKEN=1234
     ports:
       - "6000:6000"
       - "7002:7002"
@@ -28,6 +28,7 @@ services:
       - streamdal-network
     depends_on:
       - logstash-agent
+      - logstash-server
 
   logstash-server:
     container_name: logstash-server
@@ -39,7 +40,7 @@ services:
     networks:
       - streamdal-network
     depends_on:
-      - go-app
+      - logstash-agent
 
   elasticsearch:
     container_name: elasticsearch
