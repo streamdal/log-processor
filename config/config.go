@@ -12,7 +12,7 @@ const (
 )
 
 type Config struct {
-	ListenAddr           string `kong:"default=':6000',help='The address to listen on for TCP requests.'"`
+	ListenAddr           string `kong:"default='0.0.0.0:6000',help='The address to listen on for TCP requests.'"`
 	LogstashAddr         string `kong:"default='logstash-server:7002',help='The address of the logstash server to forward logs to.'"`
 	StreamdalServer      string `kong:"default='localhost:8082',help='The address of the streamdal server to pull rules from'"`
 	StreamdalToken       string `kong:"default='1234',help='The token to use to authenticate with the streamdal server'"`

@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net"
+	"time"
 
 	"github.com/charmbracelet/log"
 	"github.com/pkg/errors"
@@ -96,8 +98,17 @@ func (p *Processor) Process(logLine string) (string, error) {
 }
 
 func (p *Processor) SendToLogstash(logLine string) error {
-	if _, err := p.logstashConn.Write([]byte(logLine + "\n")); err != nil {
-		return err
+	// Establish a new connection to Logstash for each log message
+	conn, err := net.Dial("tcp", p.LogStashAddr)
+	if err != nil {
+		return errors.Wrap(err, "failed to establish connection to Logstash")
+	}
+	defer conn.Close()
+
+	// Send the log message
+	_, err = conn.Write([]byte(logLine + "\n"))
+	if err != nil {
+		return errors.Wrap(err, "failed to send log line to Logstash")
 	}
 
 	return nil
@@ -107,7 +118,38 @@ func (p *Processor) Close() error {
 	return p.logstashConn.Close()
 }
 
+func (p *Processor) EstablishLogstashConnection() error {
+	var err error
+	maxRetries := 5               // Maximum number of retries
+	retryDelay := 2 * time.Second // Initial delay between retries
+
+	for i := 0; i < maxRetries; i++ {
+		p.logstashConn, err = net.Dial("tcp", p.LogStashAddr)
+		if err == nil {
+			return nil // Connection successful
+		}
+
+		log.Errorf("Failed to establish connection to Logstash (attempt %d/%d): %v", i+1, maxRetries, err)
+
+		// Wait before retrying
+		time.Sleep(retryDelay)
+		// Increase delay for next retry, up to a maximum value
+		retryDelay = time.Duration(float64(retryDelay) * 1.5)
+		if retryDelay > 30*time.Second {
+			retryDelay = 30 * time.Second // Maximum delay of 30 seconds
+		}
+	}
+
+	return errors.Wrap(err, "failed to establish connection to Logstash after retries")
+}
+
 func (p *Processor) ListenForLogs() {
+	// Establish connection to Logstash first
+	if err := p.EstablishLogstashConnection(); err != nil {
+		log.Fatalf("Failed to establish connection to Logstash: %v", err)
+	}
+	defer p.logstashConn.Close()
+
 	ln, err := net.Listen("tcp", p.ListenAddr)
 	if err != nil {
 		log.Fatalf("Failed to listen on port %s: %v", p.ListenAddr, err)
@@ -143,6 +185,7 @@ func (p *Processor) ListenForLogs() {
 				log.Errorf("Error processing log: %s", err)
 				continue
 			}
+			fmt.Printf("Logstash connection %s", p.logstashConn)
 			if err := p.SendToLogstash(processedLog); err != nil {
 				log.Errorf("Error sending to Logstash: %v", err)
 			}

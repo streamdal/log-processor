@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"logagent/config"
 	"logagent/processor"
 	"os"
@@ -51,5 +52,6 @@ func main() {
 	}()
 
 	// Start processing logs
+	fmt.Println(p.LogStashAddr)
 	p.ListenForLogs()
 }
