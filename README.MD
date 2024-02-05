@@ -19,7 +19,7 @@ Leverage the power of Streamdal to supercharger your existing logging solution.
 
 **PII Redaction:** Automated redaction of sensitive information from logs.
 
-**Centralized Rule Management:** Streamdal provides a UI for central rule management. These rules are then pulled in from the log-processing agents across your orginization.
+**Centralized Rule Management:** Streamdal provides a UI for central rule management. These rules are then pulled in from the log-processing agents across your organization.
 
 **Scalable Architecture:** Designed to handle high volumes of log data efficiently.Blazing fast pipelines, all function built using WASM, and pushed down to local log-processors to distribute load to the edge and allow for realtime processing.  
 
@@ -38,7 +38,7 @@ The steps below will deploy the Streamdal stack along with a logstash environmen
 ![Create Pipeline](assets/create-pipeline.png)
 1. Attach Pipeline to the Data Stream
 ![Attach Pipeline](assets/attach-pipeline.png)
-1. Use Streamdal's tail to confirm IP's are masked
+1. Use Streamdal's tail to confirm IPs are masked
 ![Tail](assets/tail.png)
 1. You should see the masked IP
 ![Live Tail](assets/live-tail.png)
@@ -72,7 +72,7 @@ output {
   }
 }
 ```
-4. Add a section to recieve the processed data from the Streamdal log-processor and output to final desitination
+4. Add a section to recieve the processed data from the Streamdal log-processor and output to final destination
 
 ```
 input {
