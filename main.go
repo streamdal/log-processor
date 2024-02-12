@@ -3,15 +3,15 @@ package main
 import (
 	"context"
 	"fmt"
-	"logagent/config"
-	"logagent/processor"
+	"log-processor/config"
+	"log-processor/processor"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/charmbracelet/log"
 
-	streamdal "github.com/streamdal/go-sdk" // Import Streamdal SDK
+	streamdal "github.com/streamdal/streamdal/sdks/go" // Import Streamdal SDK
 )
 
 func main() {
