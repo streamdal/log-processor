@@ -46,6 +46,8 @@ services:
     container_name: elasticsearch
     image: elasticsearch:7.17.15
     platform: "linux/amd64"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
     environment:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
@@ -69,3 +71,7 @@ services:
 networks:
   streamdal-network:
     external: true
+
+volumes:
+  elasticsearch-data:
+    driver: local

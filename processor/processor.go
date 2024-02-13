@@ -11,7 +11,7 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/pkg/errors"
 
-	streamdal "github.com/streamdal/go-sdk"
+	streamdal "github.com/streamdal/streamdal/sdks/go"
 )
 
 type Processor struct {
@@ -90,8 +90,10 @@ func (p *Processor) Process(logLine string) (string, error) {
 		ComponentName: componentName,
 		Data:          data,
 	})
-	if resp.Error {
-		return "", err
+
+	if resp.Metadata["log_drop"] == "true" {
+		fmt.Println("Log message was skipped due to log_drop metadata.")
+		return "", nil
 	}
 
 	return string(resp.Data), nil
